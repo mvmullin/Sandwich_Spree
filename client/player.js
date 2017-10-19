@@ -25,6 +25,16 @@ const drawPlayers = () => {
     breadWidth = player.width * 1.75;
     ctx.fillStyle = '#cc9966';
     ctx.fillRect(player.x - ((breadWidth - player.width) / 2), player.y - breadHeight, breadWidth, breadHeight);
+    
+    // draw any ingrediants on top of player
+    let curY = player.y - breadHeight; // keep track of sandwich height
+    let ingredKeys = Object.keys(player.ingrediants);
+    for(let j = 0; j < ingredKeys.length; j++) {
+      const ingred = player.ingrediants[ingredKeys[j]];
+      curY -= ingred.height; // update current sandwich height
+      ctx.fillStyle = ingred.color; // fill with ingrediant color
+      ctx.fillRect(player.x - ((ingred.width - player.width) / 2), curY, ingred.width, ingred.height);
+    }
   }
 };
 
@@ -53,6 +63,14 @@ const updatePlayer = (data) => {
 
   // reset lerp percentage
   player.alpha = 0.05;
+};
+
+// update player scores from server
+const updatePlayerScores = (data) => {
+  if(players[id].lastUpdate >= data.lastUpdate) return;
+  
+  players[data.p1ID].score += 1;
+  players[data.p2ID].score += 1;
 };
 
 // remove player based on id
